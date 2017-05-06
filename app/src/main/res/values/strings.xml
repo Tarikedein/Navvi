@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Navvi</string>
+    <string name="start_label">Start Navigating</string>
+    <string name="start_button_label">Go</string>
+</resources>
