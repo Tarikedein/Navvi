@@ -2,4 +2,10 @@
     <string name="app_name">Navvi</string>
     <string name="start_label">Start Navigating</string>
     <string name="start_button_label">Go</string>
+    <string name="direct_button_label">Start Navigating</string>
+    <string name="total_distance_label">Total Distance</string>
+    <string name="current_speed_label">Current Speed</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

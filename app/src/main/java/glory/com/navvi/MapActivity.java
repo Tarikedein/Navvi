@@ -1,22 +1,19 @@
 package glory.com.navvi;
 
-import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
@@ -31,26 +28,27 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.places.AutocompleteFilter;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.location.places.ui.PlaceAutocompleteFragment;
 import com.google.android.gms.location.places.ui.PlaceSelectionListener;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.maps.model.RoundCap;
 import com.google.maps.DirectionsApi;
 import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
-import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
 
-import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,11 +67,17 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
     Double lng;
     private static final long INTERVAL = 1000 * 10;
     private static final long FASTEST_INTERVAL = 1000 * 5;
-    Button getDirections;
     LocationRequest mLocationRequest;
     String mLastUpdateTime;
     int PLACE_AUTOCOMPLETE_REQUEST_CODE = 1;
     String API_KEY="AIzaSyBCTlI-WNiKq8EKjfDJPdA8iph1l0rQzwc";
+
+    //Map Style
+    String jsonMapStyle;
+
+    //For Directions
+    private Marker now;
+    boolean navigating=false;
 
     protected void createLocationRequest() {
         mLocationRequest = new LocationRequest();
@@ -113,8 +117,8 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
                 Log.i(TAG, "Place: " + place.getName());
-                LatLng loc = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                getUrl(loc, place);
+                LatLng origin = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+                getUrl(origin, place);
             }
 
             @Override
@@ -127,8 +131,10 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
         gMap = googleMap;
+        gMap.setMapStyle(
+                MapStyleOptions.loadRawResourceStyle(this, R.raw.map_style));
+
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                     || checkSelfPermission(android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -143,7 +149,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
         // Add a marker in Algorism or current location, and move the camera.
         if(lat==null&&lng==null) {
             gMap.addMarker(new MarkerOptions().position(AlgorismOffice).title("Algorism"));
-            gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(AlgorismOffice, 16));
+            gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(AlgorismOffice, 14));
         }
         /*else{
             LatLng loc = new LatLng(lat, lng);
@@ -179,7 +185,16 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
             }
             else{
+
+            }
+        }
+        else{
+            if(navigating){
                 LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+            }
+            else {
+                mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(
+                        mGoogleApiClient);
             }
         }
     }
@@ -272,7 +287,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
 
     }
 
-    //@Override
+    @Override
     public void onConnected(Bundle connectionHint) {
         if (Build.VERSION.SDK_INT >= 23) {
             if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
@@ -290,7 +305,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
             if(gMap!=null){
                 LatLng loc = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
                 //gMap.addMarker(new MarkerOptions().position(loc).title("You are here"));
-                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 16));
+                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 14));
             }
         }
         checkLocationServices();
@@ -301,7 +316,35 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
         Log.d(TAG, "Firing onLocationChanged..............................................");
         mCurrentLocation = location;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-        updateUI();
+        if(navigating){
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+            LatLng latLng = new LatLng(latitude, longitude); //you already have this
+
+            Float oldbearing=0f;
+            if(now!=null){
+                oldbearing=now.getRotation();
+                now.remove();
+            }
+
+            now = gMap.addMarker(new MarkerOptions().position(latLng)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.directional_marker)));
+            now.setAnchor(0.5f, 0.5f);
+            if(mCurrentLocation.hasBearing()){
+                now.setRotation(mCurrentLocation.getBearing());
+            }
+            else{
+                now.setRotation(oldbearing);
+            }
+            now.setFlat(true);
+            now.setZIndex(10f);
+
+            gMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            gMap.animateCamera(CameraUpdateFactory.zoomTo(16));
+        }
+        else {
+            updateUI();
+        }
     }
 
     private void updateUI() {
@@ -313,7 +356,7 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
             if(gMap!=null){
                 LatLng loc = new LatLng(lat, lng);
                 //gMap.addMarker(new MarkerOptions().position(loc).title("You are here"));
-                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 16));
+                gMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 14));
             }
         }
         else {
@@ -328,8 +371,10 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
     }
 
     protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, this);
+        if (mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    mGoogleApiClient, this);
+        }
         Log.d(TAG, "Location update stopped .......................");
     }
 
@@ -344,26 +389,6 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
         Log.d(TAG, "onConnectionSuspended() called. Trying to reconnect.");
         Toast.makeText(getApplicationContext(), "onConnectionSuspended() called. Trying to reconnect.", Toast.LENGTH_SHORT).show();
     }
-
-    /*@Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == PLACE_AUTOCOMPLETE_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                Place place = PlaceAutocomplete.getPlace(this, data);
-                Log.i(TAG, "Place: " + place.getName());
-                LatLng loc = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-                getUrl(loc, place);
-
-            } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
-                Status status = PlaceAutocomplete.getStatus(this, data);
-                // TODO: Handle the error.
-                Log.i(TAG, status.getStatusMessage());
-
-            } else if (resultCode == RESULT_CANCELED) {
-                // The user canceled the operation.
-            }
-        }
-    }*/
 
     private void getUrl(LatLng origin, Place dest) {
         GeoApiContext context = new GeoApiContext().setApiKey(API_KEY);
@@ -386,19 +411,11 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
 
             }
         });
-
-        /*try {
-            apiRequest.await();
-        }
-        catch (ApiException |InterruptedException|IOException e) {
-            // Ignore the error.
-        }*/
     }
 
     private class DrawLines extends AsyncTask<DirectionsRoute, Void, PolylineOptions> {
         @Override
         protected PolylineOptions doInBackground(DirectionsRoute... routes) {
-            //DirectionsRoute[] routes = result.routes;
             PolylineOptions options=new PolylineOptions();
             if (routes != null) {
                 ArrayList<LatLng> points = new ArrayList<>();
@@ -409,10 +426,12 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
                         points.add(pos);
                     }
                 }
-                options.addAll(points);
-                options.width(8);
-                options.color(Color.BLUE);
-                options.visible(true);
+                options.addAll(points)
+                    .width(10)
+                    .color(Color.BLUE)
+                    .visible(true)
+                    .startCap(new RoundCap())
+                    .endCap(new RoundCap());
             }
             return options;
         }
@@ -420,7 +439,11 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
         @Override
         protected void onPostExecute(PolylineOptions options) {
             gMap.addPolyline(options);
+            gMap.setTrafficEnabled(true);
             moveToBounds(options);
+            addStartEndMarkers(options.getPoints().get(0), options.getPoints().get(options.getPoints().size()-1));
+            addGetDirFragment();
+            addTripPropertiesFragment(options);
         }
 
     }
@@ -437,4 +460,59 @@ public class MapActivity extends FragmentActivity implements LocationListener, G
         gMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, padding));
     }
 
+    private void addStartEndMarkers(LatLng start, LatLng end){
+        gMap.addMarker(new MarkerOptions().position(start).title("Start"));
+        gMap.addMarker(new MarkerOptions().position(end).title("Destination"));
+    }
+
+    private void addGetDirFragment(){
+        new Handler().post(new Runnable() {
+            public void run() {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.getdir_placeholder, new GetDirectionsFragment());
+                ft.commit();
+            }
+        });
+    }
+
+    private void addTripPropertiesFragment(final PolylineOptions options){
+        new Handler().post(new Runnable() {
+            public void run() {
+                FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+                Bundle bundle=new Bundle();
+                String dist=getDistance(options);
+                bundle.putString("dist", dist);
+                TripPropertiesFragment tripFragment=new TripPropertiesFragment();
+                tripFragment.setArguments(bundle);
+                ft.replace(R.id.tripprop_placeholder, tripFragment);
+                ft.commit();
+            }
+        });
+    }
+
+    public String getDistance(PolylineOptions polylineOptions){
+        List<LatLng> latlngs = polylineOptions.getPoints();
+        int size = latlngs.size() - 1;
+        float[] results = new float[1];
+        float sum = 0;
+
+        for(int i = 0; i < size; i++){
+            Location.distanceBetween(
+                    latlngs.get(i).latitude,
+                    latlngs.get(i).longitude,
+                    latlngs.get(i+1).latitude,
+                    latlngs.get(i+1).longitude,
+                    results);
+            sum += results[0];
+        }
+        return String.valueOf(sum);
+    }
+
+    public boolean isNavigating() {
+        return navigating;
+    }
+
+    public void setNavigating(boolean navigating) {
+        this.navigating = navigating;
+    }
 }
