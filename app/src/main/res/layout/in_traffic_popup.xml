@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/in_traffic"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="16dp"
+    android:paddingBottom="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:orientation="vertical"
+    android:background="@color/cardview_light_background">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/in_traffic"
+            android:layout_marginRight="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            style="@style/AppTheme"/>
+
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_gravity="center">
+            <RadioButton android:id="@+id/traffic_light"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/traffic_light"
+                android:onClick="onTrafficReasonClicked"
+                android:textColor="@color/colorPrimaryDark"/>
+            <RadioButton android:id="@+id/delay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/delay"
+                android:onClick="onTrafficReasonClicked"
+                android:textColor="@color/colorPrimaryDark"/>
+            <RadioButton android:id="@+id/bad_road"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/bad_road"
+                android:onClick="onTrafficReasonClicked"
+                android:textColor="@color/colorPrimaryDark"/>
+            <RadioButton android:id="@+id/accident"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/accident"
+                android:onClick="onTrafficReasonClicked"
+                android:textColor="@color/colorPrimaryDark"/>
+            <RadioButton android:id="@+id/flood"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/flood"
+                android:onClick="onTrafficReasonClicked"
+                android:textColor="@color/colorPrimaryDark"/>
+            <RadioButton android:id="@+id/police"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/police"
+                android:onClick="onTrafficReasonClicked"
+                android:textColor="@color/colorPrimaryDark"/>
+            <RadioButton android:id="@+id/other"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/other"
+                android:onClick="onTrafficReasonClicked"
+                android:textColor="@color/colorPrimaryDark"/>
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/no_in_traffic_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Ok"
+            android:textColor="@color/colorPrimaryDark"
+            android:textStyle="bold"
+            style="@style/Widget.AppCompat.Button.Colored"/>
+
+        <Button
+            android:id="@+id/close_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/close"
+            android:textColor="@color/colorPrimaryDark"
+            android:textStyle="bold"
+            style="@style/Widget.AppCompat.Button.Colored"/>
+
+    </LinearLayout>
+
+</LinearLayout>

@@ -29,7 +29,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -38,8 +40,8 @@
         </activity>
         <activity android:name=".MapActivity"></activity>
         <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyAzLh9AF3rKnty5ct-qO_hPROWaeUR0B-c" />
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBCTlI-WNiKq8EKjfDJPdA8iph1l0rQzwc"/>
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />

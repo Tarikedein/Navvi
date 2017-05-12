@@ -4,30 +4,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="glory.com.navvi.MapActivity">
+    tools:context="glory.com.navvi.MapActivity"
+    tools:layout_editor_absoluteY="25dp"
+    tools:layout_editor_absoluteX="0dp">
 
     <android.support.v7.widget.CardView
-        xmlns:card_view="http://schemas.android.com/apk/res-auto"
         android:id="@+id/card_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="20dp">
-
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
         <fragment
             android:id="@+id/place_autocomplete_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
-            />
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
     </android.support.v7.widget.CardView>
 
+    <FrameLayout
+        android:id="@+id/getdir_placeholder"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card_view">
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/tripprop_placeholder"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/getdir_placeholder">
+    </FrameLayout>
+
     <fragment
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/map"
-        tools:context=".MapActivity"
-        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tripprop_placeholder"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:context=".MapActivity" />
 
 </android.support.constraint.ConstraintLayout>

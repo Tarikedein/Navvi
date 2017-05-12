@@ -1,5 +1,20 @@
 <resources>
     <string name="app_name">Navvi</string>
     <string name="start_label">Start Navigating</string>
+    <string name="stop_label">Stop Navigating</string>
     <string name="start_button_label">Go</string>
+    <string name="direct_button_label">Start Navigating</string>
+    <string name="total_distance_label">Total Distance</string>
+    <string name="current_speed_label">Current Speed</string>
+    <string name="in_traffic">Why did you stop? </string>
+    <string name="traffic_light">Traffic Light </string>
+    <string name="bad_road">Bad Roads</string>
+    <string name="delay">Inexplicable Delay </string>
+    <string name="accident">Accident </string>
+    <string name="flood">Flood </string>
+    <string name="police">Police Check Point </string>
+    <string name="other">Other </string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="close">Close</string>
 </resources>
