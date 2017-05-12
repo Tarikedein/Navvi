@@ -18,12 +18,22 @@ public class GetDirectionsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
         // Defines the xml file for the fragment
         View myInflatedView=inflater.inflate(R.layout.fragment_getdirections, parent, false);
-        Button buttonOne = (Button) myInflatedView.findViewById(R.id.button1);
+        final Button buttonOne = (Button) myInflatedView.findViewById(R.id.button1);
         buttonOne.setOnClickListener(new Button.OnClickListener() {
             public void onClick(View v) {
                 MapActivity mapActivity=(MapActivity) getActivity();
-                mapActivity.setNavigating(true);
-                mapActivity.startLocationUpdates();
+                if(mapActivity.isNavigating()) {
+                    mapActivity.setNavigating(false);
+                    buttonOne.setText(R.string.start_label);
+                    mapActivity.stopLocationUpdates();
+                    mapActivity.clearMap();
+                }
+                else {
+                    mapActivity.setNavigating(true);
+                    buttonOne.setText(R.string.stop_label);
+                    mapActivity.startLocationUpdates();
+                }
+                mapActivity.moveAndZoom();
             }
         });
 
